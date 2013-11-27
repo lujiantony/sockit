@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <usb.h>
 #include <stdint.h>
-
+#include <errno.h>
  static unsigned char keycode[256] = {
    ' ',' ',' ',' ','a','b','c','d','e','f','g','h','i','j','k','l',
    'm','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2',
@@ -73,11 +73,11 @@ int
          struct usb_interface_descriptor *altsetting = &interface->altsetting[0];
          struct usb_endpoint_descriptor *endpoint = &altsetting->endpoint[0];
          uint8_t ep = endpoint->bEndpointAddress;
-
+	 unsigned char buf1[256];
          unsigned char buf[256];
          ssize_t read_size;
          int ignore = 1;
-
+	 int i = 0;
          handle = usb_open(dev);
          usb_get_string_simple(handle, dev->descriptor.iProduct,
                                (char *)buf, sizeof(buf));
@@ -86,8 +86,7 @@ int
                 dev->descriptor.idVendor, dev->descriptor.idProduct, buf);
 
          if (usb_set_configuration(handle, config->bConfigurationValue) < 0) {
-                 if (usb_detach_kernel_driver_np(handle,
-                                                 altsetting->bInterfaceNumber) < 0) {
+                 if (usb_detach_kernel_driver_np(handle,altsetting->bInterfaceNumber) < 0) {
                          printf("usb_set_configuration() error.\n");
                          usb_close(handle);
                          return -1;
@@ -134,7 +133,7 @@ int main (int argc,char **argv)
   // so that it knows what to look for
  // struct usb_device *dev;
   struct usb_device *dev;
-  dev = findKeyboard(0x046D,0xC31C);
+  dev = findKeyboard(0x413C,0x2106);
   int r,x;
   char string[8];
   //usb_dev_handle *fdev;
@@ -147,7 +146,7 @@ int main (int argc,char **argv)
  
   //If it gets this far, it means it found the keyboard
   printf("Found it! Now make me blink already!\n");
-  usb_keyboard_test(dev)
+  usb_keyboard_test(dev);
 /*
   while(1)
 {
