@@ -1,0 +1,1 @@
+#! /user/bin/env pythonimport sockethost = 'localhost'port = 2048size = 1024s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)s.connect((host,port))while 1:	s.send('Helloooooo Woooooooorld')	data = s.recv(size)	#s.close()	print 'Received:', data

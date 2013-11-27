@@ -6,7 +6,7 @@ A simple echo client
 
 import socket
 
-host = 'localhost'
+host = '128.59.17.215'
 port = 42000
 size = 1024
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
