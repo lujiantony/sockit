@@ -240,7 +240,7 @@ int main(int argc, char **argv) {
         printf("\n Read error \n");
     }
 */
-/*
+
         n = read(sockfd, recvbuff, sizeof (recvbuff) - 1);
 
         recvbuff[n] = 0;
