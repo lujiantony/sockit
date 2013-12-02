@@ -45,7 +45,13 @@ int main(int argc, char *argv[])
        return 1;
     } 
 
-    while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
+        while((n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
+    {
+        printf("%s\n",recvBuff);
+    } 
+
+
+/*    while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
     {
         recvBuff[n] = 0;
         if(fputs(recvBuff, stdout) == EOF)
@@ -53,7 +59,7 @@ int main(int argc, char *argv[])
             printf("\n Error : Fputs error\n");
         }
     } 
-
+*/
     if(n < 0)
     {
         printf("\n Read error \n");
