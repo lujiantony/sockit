@@ -22,69 +22,14 @@ pthread_t thread;
 pthread_mutex_t mut;
 int number=0, i;
 int sockfd = 0;
-
-/*
-void *ethernet_read_thread()
-{
-    int sockfd = 0, n = 0;
-    char recvbuff[256];
-    struct sockaddr_in serv_addr;
-    const char host[] = "128.59.17.215";
-
-    memset(recvbuff, '0',sizeof(recvbuff));
-    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-        printf("\n Error : Could not create socket \n");
-        return 1;
-    }
-
-    memset(&serv_addr, '0', sizeof(serv_addr));
-
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(42000);
-
-    if(inet_pton(AF_INET, host, &serv_addr.sin_addr)<=0)
-    {
-        printf("\n inet_pton error occured\n");
-        return 1;
-    }
-
-    if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-       printf("\n Error : Connect Failed \n");
-       return 1;
-    }
-
-/*        while((n = read(sockfd, recvbuff, sizeof(recvbuff)-1)) > 0)
-    {
-        printf("%s\n",recvbuff);
-    }
-
-    printf("Starting listening to the incoming Ethernet packages")
-    while ( (n = read(sockfd, recvbuff, sizeof(recvbuff)-1)) > 0)
-    {
-        recvbuff[n] = 0;
-        if(fputs(recvbuff, stdout) == EOF)
-        {
-            printf("\n Error : Fputs error\n");
-        }
-    }
-
-    if(n < 0)
-    {
-        printf("\n Read error \n");
-    }
-
-    pthread_exit(NULL);
-}
-*/
+char recvbuff[256];
 
 void *ethernet_read_thread()
 {
 
 	 ////////Socket initialization for Ethernet communication////////
 	    int n = 0;
-	    char recvbuff[1024];
+
 	    //unsigned char sendbuff[256];
 	    struct sockaddr_in serv_addr;
 	    const char host[] = "128.59.18.126";
@@ -126,9 +71,8 @@ void *ethernet_read_thread()
 	       while ((n = read(sockfd, recvbuff, sizeof (recvbuff) - 1)) > 0)
 	        {
 	        recvbuff[n] = 0;
-	        if(strlen(recvbuff)!=0){
-	        printf("Received: ");
-	        printf("%s\n",recvbuff);}
+	        printf("Received: %s\n",recvbuff);
+
 	        }
 
 	        if(n < 0)
@@ -254,6 +198,8 @@ int usb_keyboard_test(struct usb_device *dev) {
     usb_claim_interface(handle, altsetting->bInterfaceNumber);
 
     while (1) {
+
+
         read_size = usb_interrupt_read(handle, ep, (char *) buf, endpoint->wMaxPacketSize, 100);
         //read_size = usb_interrupt_read(handle, ep, (char *)buf1,8, 1000);
         if (read_size < 0) {
@@ -352,7 +298,8 @@ int main(int argc, char **argv) {
 
     //Start reading input from keyboard
     while (1) {
-
+    	printf("This is the main process");
+    	//printf("Received: %s",recvbuff);
         /*The USB keyboard package is as follow:
          * Each package contains 8 bytes
          * BYTE0 BYTE1 BYTE2 BYTE3 BYTE4 BYTE5 BYTE6 BYTE7
@@ -372,21 +319,6 @@ int main(int argc, char **argv) {
          * 0x02 0x00 0x04 0x05 0x00 0x00 0x00 0x00
          * This means that Left Shift + "a" + "b" are pressed simultaneously!
          */
-/*
-        n = read(sockfd, recvbuff, sizeof (recvbuff) - 1);
-
-        recvbuff[n] = 0;
-        if(strlen(recvbuff)!=0)
-        printf("The received: %s",recvbuff);
-
-        n = read(sockfd, recvbuff, sizeof (recvbuff) - 1);
-        recvbuff[n] = 0;
-        if (fputs(recvbuff, stdout) == EOF) {
-            printf("\n Error : Fputs error\n");
-        }
-        if (n < 0) {
-            printf("\n Read error \n");}
-*/
 
         //Clear the buf for usb package receiving
         buf[0] = '\0';
