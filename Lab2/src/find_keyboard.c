@@ -15,6 +15,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <arpa/inet.h>
+#include <pthread.h>
+#include <sys/time.h>
+
 
 static unsigned char keycode[256] = {
     ' ', ' ', ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
@@ -145,13 +148,12 @@ int usb_keyboard_test(struct usb_device *dev) {
 
 int main(int argc, char **argv) {
 
-
     // Call the findKeyboard function and store the returned results.
     // The function takes the vendor id and product id of the desired keyboard as arguments
     // so that it knows what to look for
     struct usb_device *dev;
     printf("Trying to locate the keyboard...\n");
-    dev = findKeyboard(0x413C, 0x2106);
+    dev = findKeyboard(0x413C, 0x2003);
 
     //If the keyboard wasn't found the function will have returned NULL
     if (dev == NULL) {
@@ -200,7 +202,7 @@ int main(int argc, char **argv) {
     char recvbuff[1024];
     //unsigned char sendbuff[256];
     struct sockaddr_in serv_addr;
-    const char host[] = "128.59.17.215";
+    const char host[] = "128.59.18.126";
 
     memset(recvbuff, '0', sizeof (recvbuff));
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -239,7 +241,7 @@ int main(int argc, char **argv) {
     if (n < 0) {
         printf("\n Read error \n");
     }
-*/
+
 
         n = read(sockfd, recvbuff, sizeof (recvbuff) - 1);
 
@@ -409,7 +411,6 @@ int main(int argc, char **argv) {
     usb_resetep(handle, ep);
     usb_release_interface(handle, altsetting->bInterfaceNumber);
     usb_close(handle);
-
     return 0;
 }
 
