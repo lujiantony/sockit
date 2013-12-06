@@ -12,10 +12,12 @@ def broadcast_data (sock, message):
         if socket != server_socket and socket != sock :
             try :
                 socket.send(message)
+		print 1
             except :
-                # broken socket connection may be, chat client pressed ctrl+c for example
-                socket.close()
-                CONNECTION_LIST.remove(socket)
+                # broken socket connection may be, chat client pressed ctrl+c for example 
+		print 2            
+		#socket.close()
+                #CONNECTION_LIST.remove(socket)
 
 #This function is used to get the ip address the local host
 def get_ip_address(ifname):
@@ -23,7 +25,7 @@ def get_ip_address(ifname):
     return socket.inet_ntoa(fcntl.ioctl(
         s.fileno(),
         0x8915,  # SIOCGIFADDR
-	struct.pack('256s', ifname[:15]))[20:24])
+        struct.pack('256s', ifname[:15]))[20:24])
  
 if __name__ == "__main__":
      
@@ -40,6 +42,9 @@ if __name__ == "__main__":
  
     # Add server socket to the list of readable connections
     CONNECTION_LIST.append(server_socket)
+    print "This is the first server address appended"
+    for item in CONNECTION_LIST:
+        print item 
  
     print "CHAT SERVER START ON " + str(get_ip_address('eth0')) + ":" + str(PORT) 
     print "READY TO RECEIVE CONNECTIONS..."
@@ -47,17 +52,22 @@ if __name__ == "__main__":
     while 1:
         # Get the list sockets which are ready to be read through select
         read_sockets,write_sockets,error_sockets = select.select(CONNECTION_LIST,[],[])
- 
+ 	
+	#print "This is the current readble sockets"
+	#print read_sockets
         for sock in read_sockets:
             #New connection
             if sock == server_socket:
                 # Handle the case in which there is a new connection recieved through server_socket
                 sockfd, addr = server_socket.accept()
                 CONNECTION_LIST.append(sockfd)
-                print "Client (%s, %s) connected" % addr
+                print "Server Msg: Client (%s, %s) is online" % addr
                 
-		sockfd.send("#Welcome to CSEE 4840 Lab2!#") 
-                broadcast_data(sockfd, "[%s:%s] entered room\n" % addr)
+                sockfd.send("Server Msg: Welcome to CSEE 4840 Lab2!") 
+                broadcast_data(sockfd, "Server Msg: Client (%s:%s) is online" % addr)
+		print "New member added to connection list "
+		for item in CONNECTION_LIST:
+        	    print item 
              
             #Some incoming message from a client
             else:
@@ -66,15 +76,30 @@ if __name__ == "__main__":
                     #In Windows, sometimes when a TCP program closes abruptly,
                     # a "Connection reset by peer" exception will be thrown
                     data = sock.recv(RECV_BUFFER)
+		    address = sock.getpeername()
+		    
                     if data:
                         broadcast_data(sock, '<' + str(sock.getpeername()) + '> ' + data) 
-			print "RECEIVED: " + data 	               
-                 
+                        print '<' + str(sock.getpeername()) + '>' + data  
+			print "These are the current members of the list"
+			for item in CONNECTION_LIST:
+        		    print item 
+		    elif len(data) == 0:    
+			print 4                
+                        broadcast_data(sock, "Server Msg: Client (%s, %s) is offline" % address)
+                        print "Server Msg: Client (%s, %s) is offline" % address
+			sock.close()
+			CONNECTION_LIST.remove(sock)  
+			print "Member got removed from Connection List"
+			for item in CONNECTION_LIST:
+              		    print item 
+
                 except:
-                    broadcast_data(sock, "Client (%s, %s) is offline" % addr)
-                    print "Client (%s, %s) is offline" % addr
-                    sock.close()
-                    CONNECTION_LIST.remove(sock)
+		    #print 3
+                    #broadcast_data(sock, "Server Msg: Client (%s, %s) is offline" % addr)
+                    #print "Server Msg: Client (%s, %s) is offline" % addr
+                    #sock.close()
+                    #CONNECTION_LIST.remove(sock)
                     continue
      
     server_socket.close()
